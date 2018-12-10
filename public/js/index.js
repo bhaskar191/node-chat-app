@@ -28,12 +28,14 @@ var socket = io();
     jQuery('#message-form').on('submit',function(e) {
         e.preventDefault();
 
+        var messageTextBox = jQuery('[name=message]');
+
         socket.emit('createMessage', {
             from: 'User',
-            text: jQuery('[name=message]').val()
+            text: messageTextBox.val()
 
         },function () {
-
+            messageTextBox.val('')
         });
     });
 
@@ -42,12 +44,16 @@ var socket = io();
         if(!navigator.geolocation){
             return alert('geolocation is not support your browser.');
             }
+            locationButton.attr('disabled','disabled').text('Sending location.....');
+
            navigator.geolocation.getCurrentPosition(function (position) {
+               locationButton.removeAttr('disabled').text('sending location');
           socket.emit('createLocationMessage', {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude
           })  
         }, function() {
+            locationButton.removeAttr('disabled').text('sending location');
             alert('Unable to fetch location.');
            }); 
     });
